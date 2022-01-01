@@ -53,8 +53,6 @@ def new_direction(team: Team, old_stats: Tuple[int, int, int, int]):
         f"{team.get_text()} has a new direction, skill change:\n "
         f"\tOld - avg: {old_stats[0]} (dev: {old_stats[1]}; sct: {old_stats[2]}; eng_sct: {old_stats[3]})\n"
         f"\tNew - avg: {new_stats[0]} (dev: {new_stats[1]}; sct: {new_stats[2]}; eng_sct: {new_stats[3]})")
-    if team.name == "Marlboro":
-        stopornot = input(" ")
 
 
 def race_results(track: Track, driver_performances: List[Tuple[Driver, float]]):

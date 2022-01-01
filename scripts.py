@@ -91,9 +91,6 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     team = Team(
         'Marlboro', [drv1, drv2], [1, 2], random.random()*0.9, engine, "bright_white", "red", random.randint(1, 5))
     teams.append(team)
-    team.direction.development = 100
-    team.direction.scouting = 100
-    team.direction.eng_scouting = 100
     engine.add_team(team)
     drv1.team = team
     drv2.team = team
