@@ -1,6 +1,6 @@
 from __future__ import annotations
 from operator import itemgetter
-from typing import Tuple, List, Optional
+from typing import Tuple, List
 
 from drivers import Driver
 import display
@@ -26,7 +26,6 @@ class Race:
                 if random.random() > team.engine.reliability:
                     performance_driver = -1
                 else:
-                    # Tr_CvD * ((Tr_DvE * T_C + (1 - Tr_DvE) * E_P)/2) + (1 - Tr_CvD) * (D_S)
                     performance_driver = Tr_CoD * performance_car + (1 - Tr_CoD) * driver.skill
                     random_factor = random.random()
                     performance_driver = random_factor * RACE_RANDOMNESS + (1 - RACE_RANDOMNESS) * performance_driver
@@ -118,7 +117,7 @@ class World:
             statistics_engine[winning_driver.team.engine] = \
                 statistics_engine.get(winning_driver.team.engine, 0) + 1
 
-            # Team operations and statistics
+            # --- Team operations and statistics ---
             statistics_team[winning_team] = statistics_team.get(winning_team, 0) + 1
 
             history_driver.append(
@@ -170,27 +169,29 @@ class World:
             driver.age_driver()
 
     def tweak_chassis_engine(self):
-        # print("Tweaks: "
+        changelog_chassis = []
+        changelog_engine = []
         revolution = False  # Tech revolution that can change the quality of cars a lot
         random_factor = 0.3
         if random.random() < REVOLUTION_PROBABILITY:
-            # print(" --- REVOLUTION --- "
             revolution = True
-        #     random_factor = 0.6
-        # else:
-        #     random_factor = 0.3
 
         for team in self.teams:
-            # old_value = team.chassis
+            old_chassis = team.chassis
             if revolution:
                 team.chassis = (1 - REVOLUTION_EFFECT) * team.chassis + REVOLUTION_EFFECT * random.random()
             value = random.random() * random_factor - (random_factor / 2) + team.direction.development * \
                 TEAM_DEVELOPMENT_INFLUENCE
             team.chassis += value
             team.chassis = min(1, max(0, team.chassis))
-            # print("Team {} chassis evolution from {} to {}".format(team.name, old_value, team.chassis)
+            changelog_chassis.append({"team": team, "old_chassis": old_chassis})
+
+        if PRINT_CHASSIS_ENGINE_UPDATES or (PRINT_CHASSIS_ENGINE_REVOLUTIONS and revolution):
+            display.new_chassis_values(changelog_chassis)
 
         for engine in self.engines:
+            old_power = engine.power
+            old_reliability = engine.reliability
             if revolution:
                 engine.power = (1 - REVOLUTION_EFFECT) * engine.power + REVOLUTION_EFFECT * random.random()
             value = random.random() * random_factor - (random_factor / 2)
@@ -204,6 +205,11 @@ class World:
             engine.reliability = min(MAXIMUM_RELIABILITY, max(MINIMUM_RELIABILITY, engine.reliability))
 
             engine.update_value()
+
+            changelog_engine.append({"engine": engine, "old_power": old_power, "old_reliability": old_reliability})
+
+        if PRINT_CHASSIS_ENGINE_UPDATES or (PRINT_CHASSIS_ENGINE_REVOLUTIONS and revolution):
+            display.new_engine_values(changelog_engine)
 
     def tweak_driver_form(self):
         for team in self.teams:
@@ -257,8 +263,6 @@ class World:
             perception = driver.skill * scouting_value + random.random() * (1 - scouting_value)
             perception_list.append(perception)
 
-        # print(sorted(zip(perception_list, driver_list), key=lambda d: d[0], reverse=True))
-
         return [driver for _, driver in sorted(zip(perception_list, driver_list), key=lambda d: d[0], reverse=True)]
 
     def teams_pick_engines(self, team_results: List[Tuple[Team, int]], winning_driver: Driver, winning_team: Team):
@@ -309,8 +313,6 @@ class World:
             perception = engine.value * scouting_value + random.random() * (1 - scouting_value)
             perception_list.append(perception)
 
-        # print(sorted(zip(perception_list, engine_list), reverse=True))
-
         return [engine for _, engine in sorted(zip(perception_list, engine_list), key=lambda e: e[0], reverse=True)]
 
     @staticmethod
@@ -343,7 +345,6 @@ class World:
 
 
 def script():
-    # Run
     world = World(NUMBER_OF_SEASONS)
     world.run_world()
 

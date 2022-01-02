@@ -1,8 +1,7 @@
 from __future__ import annotations
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 from rich.table import Table, Column
-from rich.text import Text
 from rich import box
 
 from basic import Track
@@ -12,9 +11,29 @@ from globals import console
 from translation import flags
 
 
+def new_chassis_values(values: List[Dict]):
+    chassis_table = Table("Team", "Old Chassis", "New Chassis", title="Driver Statistics", box=box.SIMPLE)
+    for value in values:
+        chassis_table.add_row(
+            value["team"].get_text(), str(int(value["old_chassis"]*100)), str(int(value["team"].chassis*100)))
+    console.print(chassis_table)
+
+
+def new_engine_values(values: List[Dict]):
+    engine_table = Table(
+        "Engine", "Old Power", "New Power", "Old Reliability", "New Reliability",
+        title="Driver Statistics", box=box.SIMPLE)
+    for value in values:
+        engine_table.add_row(
+            value["engine"].get_text(), str(int(value["old_power"]*100)), str(int(value["engine"].power*100)),
+            str(int(value["old_reliability"]*100)), str(int(value["engine"].reliability*100)))
+    console.print(engine_table)
+
+
 def join_driver_pool(new_driver: Driver):
-    console.print(f"Driver joined the pool of drivers: {new_driver.name} {flags[new_driver.nationality]} "
-                  f"(skill: {int(100 * new_driver.skill)})")
+    console.print(
+        f"Driver joined the pool of drivers: {new_driver.name} {flags[new_driver.nationality]}"
+        f" (skill: {int(100 * new_driver.skill)})")
 
 
 def new_engine_deal(team: Team, engine: Engine, renew: bool=False):
