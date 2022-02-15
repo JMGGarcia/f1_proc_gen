@@ -15,7 +15,7 @@ def new_chassis_values(values: List[Dict]):
     chassis_table = Table("Team", "Old Chassis", "New Chassis", title="Driver Statistics", box=box.SIMPLE)
     for value in values:
         chassis_table.add_row(
-            value["team"].get_text(), str(int(value["old_chassis"]*100)), str(int(value["team"].chassis*100)))
+            value["team"].text_display, str(int(value["old_chassis"] * 100)), str(int(value["team"].chassis * 100)))
     console.print(chassis_table)
 
 
@@ -25,7 +25,7 @@ def new_engine_values(values: List[Dict]):
         title="Driver Statistics", box=box.SIMPLE)
     for value in values:
         engine_table.add_row(
-            value["engine"].get_text(), str(int(value["old_power"]*100)), str(int(value["engine"].power*100)),
+            value["engine"].text_display, str(int(value["old_power"] * 100)), str(int(value["engine"].power * 100)),
             str(int(value["old_reliability"]*100)), str(int(value["engine"].reliability*100)))
     console.print(engine_table)
 
@@ -42,7 +42,7 @@ def new_engine_deal(team: Team, engine: Engine, renew: bool=False):
     else:
         renew_text = "now"
     console.print(
-        f"Team {team.get_text()} {renew_text} with engine {engine.get_text()} with {int(100 * engine.power)} "
+        f"Team {team.text_display} {renew_text} with engine {engine.text_display} with {int(100 * engine.power)} "
         f"power and {int(100 * engine.reliability)} reliability for {str(team.engine_contract)} years")
 
 
@@ -57,7 +57,7 @@ def renew_winning_driver_engine(winning_driver: Driver, winning_driver_engine: E
 def driver_change_teams(new_driver: Driver, team: Team, contract: int):
     console.print(
         f"Driver {new_driver.name} {flags[new_driver.nationality]} (skill: {int(100 * new_driver.skill)}) "
-        f"now in {team.get_text()}  for {team.driver_contracts[contract]} years!")
+        f"now in {team.text_display}  for {team.driver_contracts[contract]} years!")
 
 
 def retire_driver(driver: Driver):
@@ -69,7 +69,7 @@ def retire_driver(driver: Driver):
 def new_direction(team: Team, old_stats: Tuple[int, int, int, int]):
     new_stats = team.direction.get_stats()
     console.print(
-        f"{team.get_text()} has a new direction, skill change:\n "
+        f"{team.text_display} has a new direction, skill change:\n "
         f"\tOld - avg: {old_stats[0]} (dev: {old_stats[1]}; sct: {old_stats[2]}; eng_sct: {old_stats[3]})\n"
         f"\tNew - avg: {new_stats[0]} (dev: {new_stats[1]}; sct: {new_stats[2]}; eng_sct: {new_stats[3]})")
 
@@ -81,12 +81,12 @@ def race_results(track: Track, driver_performances: List[Tuple[Driver, float]]):
     for idx, d in enumerate(driver_performances):
         if d[1] == -1:
             race_table.add_row(
-                "NA", d[0].name, flags[d[0].nationality], str(d[0].get_skill()), d[0].team.get_text(),
-                d[0].team.engine.get_text(), str(int(d[1]*100)))
+                "NA", d[0].name, flags[d[0].nationality], str(d[0].skill_100), d[0].team.text_display,
+                d[0].team.engine.text_display, str(int(d[1] * 100)))
         else:
             race_table.add_row(
-                str(idx + 1), d[0].name, flags[d[0].nationality], str(d[0].get_skill()), d[0].team.get_text(),
-                d[0].team.engine.get_text(), str(int(d[1]*100)))
+                str(idx + 1), d[0].name, flags[d[0].nationality], str(d[0].skill_100), d[0].team.text_display,
+                d[0].team.engine.text_display, str(int(d[1] * 100)))
     console.print(race_table)
 
 
@@ -109,17 +109,17 @@ def stats(
     driver_stats_table = Table("Pos", "Name", "Nat", "tSkill", "Wins", title="Driver Statistics", box=box.SIMPLE)
     for idx, s in enumerate(drv_stats):
         driver_stats_table.add_row(
-            str(idx + 1), s[0].name, flags[s[0].nationality], str(s[0].get_top_skill()), str(s[1]))
+            str(idx + 1), s[0].name, flags[s[0].nationality], str(s[0].top_skill_100), str(s[1]))
     console.print(driver_stats_table)
 
     team_stats_table = Table("Pos", "Name", "Wins", title="Team Statistics", box=box.SIMPLE)
     for idx, s in enumerate(team_stats):
-        team_stats_table.add_row(str(idx + 1), s[0].get_text(), str(s[1]))
+        team_stats_table.add_row(str(idx + 1), s[0].text_display, str(s[1]))
     console.print(team_stats_table)
 
     engine_stats_table = Table("Pos", "Name", "Wins", title="Engine Statistics", box=box.SIMPLE)
     for idx, s in enumerate(engine_stats):
-        engine_stats_table.add_row(str(idx + 1), s[0].get_text(), str(s[1]))
+        engine_stats_table.add_row(str(idx + 1), s[0].text_display, str(s[1]))
     console.print(engine_stats_table)
 
 
@@ -129,14 +129,14 @@ def season(driver_results: List[Tuple[Driver, int]], team_results: List[Tuple[Te
         box=box.SIMPLE)
     for r in driver_results:
         driver_results_table.add_row(
-            str(r[1]), r[0].name, flags[r[0].nationality], str(int(100 * r[0].skill)), r[0].team.get_text(),
-            r[0].team.engine.get_text())
+            str(r[1]), r[0].name, flags[r[0].nationality], str(int(100 * r[0].skill)), r[0].team.text_display,
+            r[0].team.engine.text_display)
     console.print(driver_results_table)
 
     team_results_table = Table(
         "Pts", Column("Team", justify="right"), "Engine",  "Quality", "Direction", title="Team Results", box=box.SIMPLE)
     for r in team_results:
         team_results_table.add_row(
-            str(r[1]), r[0].get_text(), r[0].engine.get_text(), str(r[0].get_avg_skill()),
-            str(r[0].direction.get_avg()))
+            str(r[1]), r[0].text_display, r[0].engine.text_display, str(r[0].avg_skill_100),
+            str(r[0].direction.avg_100))
     console.print(team_results_table)

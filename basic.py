@@ -68,7 +68,7 @@ class Season:
 
             for idx, performance in enumerate(results):
                 if performance[1] != -1 and idx < len(self.points):
-                    self.update_points(results[idx][0], self.points[idx])
+                    self.__update_points(results[idx][0], self.points[idx])
                 else:
                     break
 
@@ -86,7 +86,7 @@ class Season:
         self.sorted_driver_results = driver_results
         self.sorted_team_results = team_results
 
-    def update_points(self, driver: Driver, points: int):
+    def __update_points(self, driver: Driver, points: int):
         self.classification_driver[driver] = self.classification_driver[driver] + points
         self.classification_team[driver.team] = self.classification_team[driver.team] + points
 
@@ -122,21 +122,23 @@ class World:
 
             history_driver.append(
                 (n_season + 1, winning_driver.name, "%.2f" % winning_driver.top_skill, str(winning_driver.age),
-                 winning_driver.team.get_text(), winning_driver.team.engine.get_text(), winning_driver.nationality))
+                 winning_driver.team.text_display,
+                 winning_driver.team.engine.text_display,
+                 winning_driver.nationality))
 
             history_team.append(
                 (n_season+1,
-                 winning_team.get_text(),
-                 winning_team.engine.get_text(),
+                 winning_team.text_display,
+                 winning_team.engine.text_display,
                  winning_team.direction.avg))
 
             # --- World updates ---
-            self.update_directions(team_results)
-            self.age_drivers()
-            self.tweak_chassis_engine()
-            self.teams_pick_engines(team_results, winning_driver, winning_team)
-            self.teams_pick_drivers(team_results)
-            self.tweak_driver_form()
+            self.__update_directions(team_results)
+            self.__age_drivers()
+            self.__tweak_chassis_engine()
+            self.__teams_pick_engines(team_results, winning_driver, winning_team)
+            self.__teams_pick_drivers(team_results)
+            self.__tweak_driver_form()
 
         # --- After run statistics ---
         console.rule(f"[bold red]Final Statistics")
@@ -154,7 +156,7 @@ class World:
         if PRINT_STATS:
             display.stats(drv_stats, team_stats, engine_stats)
 
-    def update_directions(self, team_results: List[Tuple[Team, int]]):
+    def __update_directions(self, team_results: List[Tuple[Team, int]]):
         total_teams = len(self.teams)
         for idx, team_result in enumerate(team_results, 1):
             team = team_result[0]
@@ -164,11 +166,11 @@ class World:
                 display.new_direction(team, old_stats)
                 team.remove_engine()
 
-    def age_drivers(self):
+    def __age_drivers(self):
         for driver in self.drivers:
             driver.age_driver()
 
-    def tweak_chassis_engine(self):
+    def __tweak_chassis_engine(self):
         changelog_chassis = []
         changelog_engine = []
         revolution = False  # Tech revolution that can change the quality of cars a lot
@@ -211,7 +213,7 @@ class World:
         if PRINT_CHASSIS_ENGINE_UPDATES or (PRINT_CHASSIS_ENGINE_REVOLUTIONS and revolution):
             display.new_engine_values(changelog_engine)
 
-    def tweak_driver_form(self):
+    def __tweak_driver_form(self):
         for team in self.teams:
             for driver in team.drivers:
                 value = random.random()
@@ -222,7 +224,7 @@ class World:
                 else:
                     driver.set_skill('M')
 
-    def take_out_driver_from_team(self, team: Team, idx: int):
+    def __take_out_driver_from_team(self, team: Team, idx: int):
         driver = team.drivers[idx]
         team.drivers[idx] = None
         team.driver_contracts[idx] = -1
@@ -230,15 +232,15 @@ class World:
         if driver.age > 38 or (driver.age > 30 and random.random() < 0.2):
             if PRINT_DRIVER_UPDATES:
                 display.retire_driver(driver)
-            self.retire_driver(driver)
+            self.__retire_driver(driver)
 
-    def teams_pick_drivers(self, team_results: List[Tuple[Team, int]]):
+    def __teams_pick_drivers(self, team_results: List[Tuple[Team, int]]):
         for team in self.teams:
             drv1_valid, drv2_valid = team.is_drivers_contracts_still_valid()
             if not drv1_valid:
-                self.take_out_driver_from_team(team, 0)
+                self.__take_out_driver_from_team(team, 0)
             if not drv2_valid:
-                self.take_out_driver_from_team(team, 1)
+                self.__take_out_driver_from_team(team, 1)
 
         for team_result in team_results:
             team = team_result[0]
@@ -247,15 +249,15 @@ class World:
             for idx, driver in enumerate(team.drivers):
                 if driver is None:
                     if not team_perception:
-                        team_perception = self.compute_driver_perception(team)
+                        team_perception = self.__compute_driver_perception(team)
                     new_driver = team_perception.pop(0)
                     team.drivers[idx] = new_driver
-                    team.driver_contracts[idx] = self.engine_contract_years()
+                    team.driver_contracts[idx] = self.__engine_contract_years()
                     new_driver.team = team
                     if PRINT_DRIVER_UPDATES:
                         display.driver_change_teams(new_driver, team, idx)
 
-    def compute_driver_perception(self, team):
+    def __compute_driver_perception(self, team):
         driver_list = [driver for driver in self.drivers if driver.team is None]
         scouting_value = SCOUTING_TRUE_FACTOR + team.direction.scouting * (1 - SCOUTING_TRUE_FACTOR)
         perception_list = []
@@ -265,7 +267,7 @@ class World:
 
         return [driver for _, driver in sorted(zip(perception_list, driver_list), key=lambda d: d[0], reverse=True)]
 
-    def teams_pick_engines(self, team_results: List[Tuple[Team, int]], winning_driver: Driver, winning_team: Team):
+    def __teams_pick_engines(self, team_results: List[Tuple[Team, int]], winning_driver: Driver, winning_team: Team):
         winning_driver_engine = winning_driver.team.engine
         winning_team_engine = winning_team.engine
 
@@ -280,14 +282,14 @@ class World:
         if winning_driver.team.engine is None:
             winning_driver.team.engine = winning_driver_engine
             winning_driver_engine.add_team(winning_driver.team)
-            winning_driver.team.engine_contract = self.engine_contract_years()
+            winning_driver.team.engine_contract = self.__engine_contract_years()
             if PRINT_ENGINE_CHANGES:
                 display.renew_winning_driver_engine(winning_driver, winning_driver_engine)
 
         if winning_team.engine is None:
             winning_team.engine = winning_team_engine
             winning_team_engine.add_team(winning_team)
-            winning_team.engine_contract = self.engine_contract_years()
+            winning_team.engine_contract = self.__engine_contract_years()
             if PRINT_ENGINE_CHANGES:
                 display.renew_winning_team_engine(winning_team, winning_team_engine)
 
@@ -295,17 +297,17 @@ class World:
         for team_result in team_results:
             team = team_result[0]
             if team.engine is None:
-                team_perception = self.compute_engine_perception(team)
+                team_perception = self.__compute_engine_perception(team)
                 for engine in team_perception:
                     if len(engine.teams) < MAX_TEAMS_PER_ENGINE:
                         team.engine = engine
                         engine.add_team(team)
-                        team.engine_contract = self.engine_contract_years()
+                        team.engine_contract = self.__engine_contract_years()
                         if PRINT_ENGINE_CHANGES:
                             display.new_engine_deal(team, engine)
                         break
 
-    def compute_engine_perception(self, team: Team) -> List[Engine]:
+    def __compute_engine_perception(self, team: Team) -> List[Engine]:
         engine_list = self.engines
         scouting_value = SCOUTING_TRUE_FACTOR + team.direction.eng_scouting * (1 - SCOUTING_TRUE_FACTOR)
         perception_list = []
@@ -316,7 +318,7 @@ class World:
         return [engine for _, engine in sorted(zip(perception_list, engine_list), key=lambda e: e[0], reverse=True)]
 
     @staticmethod
-    def engine_contract_years() -> int:
+    def __engine_contract_years() -> int:
         contract_years_value = random.random()
         if contract_years_value < 0.02:
             return 2
@@ -329,17 +331,17 @@ class World:
         else:
             return 6
 
-    def generate_driver(self):
+    def __generate_driver(self):
         new_driver = driver_generator.generate_driver()
         self.drivers.append(new_driver)
         if PRINT_DRIVER_UPDATES:
             display.join_driver_pool(new_driver)
 
-    def retire_driver(self, driver: Driver):
+    def __retire_driver(self, driver: Driver):
         for idx, d in enumerate(self.drivers):
             if d.name == driver.name:
                 del self.drivers[idx]
-                self.generate_driver()
+                self.__generate_driver()
                 return
         raise Exception("Did not retire driver")
 

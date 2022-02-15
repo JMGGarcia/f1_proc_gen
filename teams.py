@@ -19,6 +19,11 @@ class Engine:
         self.text_color = text_color
         self.text_high = text_high
 
+    @property
+    def text_display(self) -> str:
+        # return Text(self.name, style=f"{self.text_color} on {self.text_high}")
+        return f"[{self.text_color} on {self.text_high}]{self.name}[/]"
+
     def add_team(self, team: Team):
         self.teams.append(team)
 
@@ -32,10 +37,6 @@ class Engine:
     def update_value(self):
         self.value = (self.power + self.reliability) / 2
 
-    def get_text(self) -> str:
-        # return Text(self.name, style=f"{self.text_color} on {self.text_high}")
-        return f"[{self.text_color} on {self.text_high}]{self.name}[/]"
-
 
 class Direction:
     def __init__(self):
@@ -45,6 +46,10 @@ class Direction:
         self.eng_scouting = random.random()
         self.avg = (self.development + self.scouting + self.eng_scouting) / 3
         self.position_history = []
+
+    @property
+    def avg_100(self) -> int:
+        return int(self.avg * 100)
 
     def yearly_update(self, position: int, total_teams: int) -> bool:
         """
@@ -102,14 +107,7 @@ class Direction:
             self.avg = (self.development + self.scouting + self.eng_scouting) / 3
             return False
 
-    def get_direction_stats(self) -> str:
-        return "Development: {}; Scouting: {}; Engine Scouting: {} [{}]".format(
-            self.development, self.scouting, self.eng_scouting, self.avg
-        )
-
-    def get_avg(self) -> int:
-        return int(self.avg * 100)
-
+    # TODO improve to be mroe understandable
     def get_stats(self) -> Tuple[int, int, int, int]:
         return int(self.avg * 100), int(self.development * 100), int(self.scouting * 100), int(self.eng_scouting * 100)
 
@@ -128,6 +126,15 @@ class Team:
         self.text_color = text_color
         self.text_high = text_high
         # print("Team {}'s direction is: {}".format(self.name, self.direction.print_direction_stats()))
+
+    @property
+    def avg_skill_100(self) -> int:
+        return int(((self.chassis + self.engine.value) / 2) * 100)
+
+    @property
+    def text_display(self) -> str:
+        # return Text(self.name, justify="right", style=f"{self.text_color} on {self.text_high}")
+        return f"[{self.text_color} on {self.text_high}]{self.name}[/]"
 
     def remove_engine(self):
         engine = self.engine
@@ -155,13 +162,3 @@ class Team:
         else:
             status.append(True)
         return status[0], status[1]
-
-    def get_avg_skill(self) -> int:
-        return int(((self.chassis + self.engine.value) / 2) * 100)
-
-    def str_team_eng(self) -> str:
-        return self.name + " " + self.engine.name
-
-    def get_text(self) -> str:
-        # return Text(self.name, justify="right", style=f"{self.text_color} on {self.text_high}")
-        return f"[{self.text_color} on {self.text_high}]{self.name}[/]"

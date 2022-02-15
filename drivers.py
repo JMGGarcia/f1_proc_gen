@@ -9,10 +9,22 @@ from settings import *
 class DriverGenerator:
     def __init__(self):
         self.current_id = 0
-        self.name_structure = self.load_names()
+        self.name_structure = self.__load_names()
+
+    def generate_driver(self) -> Driver:
+        nat = random.choice(list(self.name_structure.keys()))
+        first_name = random.choice(self.name_structure[nat]["first"])
+        last_name = random.choice(self.name_structure[nat]["last"])
+        skill = random.random() * 0.59  # TODO Review this
+        d = Driver(
+            driver_id=self.current_id, first_name=first_name, last_name=last_name, nationality=nat, skill=skill,
+            age=random.randint(GEN_MIN_AGE, GEN_MAX_AGE))
+        self.current_id += 1
+
+        return d
 
     @staticmethod
-    def load_names() -> Dict[str, Dict[str, List[str]]]:
+    def __load_names() -> Dict[str, Dict[str, List[str]]]:
         strut = {}
 
         name_root = "./names"
@@ -28,18 +40,6 @@ class DriverGenerator:
                 strut[nationality]["last"] = names
 
         return strut
-
-    def generate_driver(self) -> Driver:
-        nat = random.choice(list(self.name_structure.keys()))
-        first_name = random.choice(self.name_structure[nat]["first"])
-        last_name = random.choice(self.name_structure[nat]["last"])
-        skill = random.random() * 0.59  # TODO Review this
-        d = Driver(
-            driver_id=self.current_id, first_name=first_name, last_name=last_name, nationality=nat, skill=skill,
-            age=random.randint(GEN_MIN_AGE, GEN_MAX_AGE))
-        self.current_id += 1
-
-        return d
 
 
 class Driver:
@@ -57,6 +57,18 @@ class Driver:
         self.team = None
         self.form = form
         self.age = age
+
+    @property
+    def base_skill_100(self) -> int:
+        return int(self.base_skill * 100)
+
+    @property
+    def top_skill_100(self) -> int:
+        return int(self.top_skill * 100)
+
+    @property
+    def skill_100(self) -> int:
+        return int(self.skill * 100)
 
     def age_driver(self):
         self.age += 1
@@ -83,15 +95,6 @@ class Driver:
                 self.skill = 1
         else:
             self.skill = self.base_skill
-
-    def get_base_skill(self) -> int:
-        return int(self.base_skill * 100)
-
-    def get_top_skill(self) -> int:
-        return int(self.top_skill * 100)
-
-    def get_skill(self) -> int:
-        return int(self.skill * 100)
 
     def __str__(self) -> str:
         return f"[{self.id}] {self.name} ({self.nationality}) - Age: {self.age} - Skill: {self.skill}"
