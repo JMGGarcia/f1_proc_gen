@@ -1,11 +1,12 @@
 from __future__ import annotations
+
 from operator import itemgetter
 from typing import Tuple, List
 
-from drivers import Driver
 import display
-from globals import random, driver_generator, console
 import scripts
+from drivers import Driver
+from globals import random, driver_generator, console
 from settings import *
 from teams import Team, Engine
 from tracks import Track
@@ -127,7 +128,7 @@ class World:
                  winning_driver.nationality))
 
             history_team.append(
-                (n_season+1,
+                (n_season + 1,
                  winning_team.text_display,
                  winning_team.engine.text_display,
                  winning_team.direction.avg))
@@ -183,7 +184,7 @@ class World:
             if revolution:
                 team.chassis = (1 - REVOLUTION_EFFECT) * team.chassis + REVOLUTION_EFFECT * random.random()
             value = random.random() * random_factor - (random_factor / 2) + team.direction.development * \
-                TEAM_DEVELOPMENT_INFLUENCE
+                    TEAM_DEVELOPMENT_INFLUENCE
             team.chassis += value
             team.chassis = min(1, max(0, team.chassis))
             changelog_chassis.append({"team": team, "old_chassis": old_chassis})

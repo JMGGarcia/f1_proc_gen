@@ -1,6 +1,7 @@
 from __future__ import annotations
-import random
+
 import os
+import random
 from typing import List, Dict
 
 from settings import *
@@ -44,8 +45,8 @@ class DriverGenerator:
 
 class Driver:
     def __init__(
-            self, driver_id: int, first_name: str, last_name: str, nationality: str, skill: float, form: str='M',
-            age: int=20):
+            self, driver_id: int, first_name: str, last_name: str, nationality: str, skill: float, form: str = 'M',
+            age: int = 20):
         self.id = driver_id
         self.first_name = first_name
         self.last_name = last_name

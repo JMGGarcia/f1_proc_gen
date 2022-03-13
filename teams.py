@@ -1,23 +1,28 @@
 from __future__ import annotations
-from typing import Tuple, List, Optional
 
-from rich.text import Text
+from dataclasses import dataclass, field
+from typing import Tuple, List, Optional
 
 from drivers import Driver
 from globals import random
 from settings import *
 
 
+# Putting eq to false so that the object is hashable
+@dataclass(eq=False)
 class Engine:
-    def __init__(self, name: str, power: float, reliability: float, text_color: str, text_high: str):
-        self.name = name
-        self.power = power
-        self.reliability = reliability
+    name: str
+    power: float
+    reliability: float
+    text_color: str
+    text_high: str
+    teams: List[Team] = field(init=False)
+    value: Optional[float] = field(init=False)
+
+    def __post_init__(self):
         self.teams = []
         self.value = None
         self.update_value()
-        self.text_color = text_color
-        self.text_high = text_high
 
     @property
     def text_display(self) -> str:
@@ -66,7 +71,7 @@ class Direction:
             self.position_history.append(position)
             if len(self.position_history) > HISTORY_YEARS:
                 self.position_history.pop(0)
-            average_position = sum(self.position_history)*1.0/len(self.position_history)
+            average_position = sum(self.position_history) * 1.0 / len(self.position_history)
 
         if (
                 average_position == total_teams and self.years >= 3
@@ -107,25 +112,25 @@ class Direction:
             self.avg = (self.development + self.scouting + self.eng_scouting) / 3
             return False
 
-    # TODO improve to be mroe understandable
+    # TODO improve to be more understandable
     def get_stats(self) -> Tuple[int, int, int, int]:
         return int(self.avg * 100), int(self.development * 100), int(self.scouting * 100), int(self.eng_scouting * 100)
 
 
+@dataclass(eq=False)
 class Team:
-    def __init__(
-            self, name: str, drivers: List[Optional[Driver]], driver_contracts: List[int, int], chassis: float,
-            engine: Engine, text_color: str, text_high: str, engine_contract: int=3):
-        self.name = name
-        self.drivers = drivers
-        self.driver_contracts = driver_contracts  # Represented by the number of years left
-        self.chassis = chassis  # Represented by a 0-1 float representing the quality
-        self.engine = engine
-        self.engine_contract = engine_contract
+    name: str
+    drivers: List[Optional[Driver]]
+    driver_contracts: List[int, int]  # Represented by the number of years left
+    chassis: float  # Represented by a 0-1 float representing the quality
+    engine: Engine
+    text_color: str
+    text_high: str
+    engine_contract: int = 3
+    direction: Direction = field(init=False)
+
+    def __post_init__(self):
         self.direction = Direction()
-        self.text_color = text_color
-        self.text_high = text_high
-        # print("Team {}'s direction is: {}".format(self.name, self.direction.print_direction_stats()))
 
     @property
     def avg_skill_100(self) -> int:

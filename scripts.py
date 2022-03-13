@@ -2,10 +2,10 @@ import random
 from typing import List, Tuple
 
 from drivers import Driver
+from globals import driver_generator
 from teams import Engine
 from teams import Team
 from tracks import Track
-from globals import driver_generator
 
 
 def generate_tracks() -> List[Track]:
@@ -78,7 +78,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[1]
     engine = random.choice(engines)
     team = Team(
-        'Lucky Strike', [drv1, drv2], [1, 2], random.random()*0.9, engine, "red", "navajo_white1",
+        'Lucky Strike', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "red", "navajo_white1",
         random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
@@ -89,7 +89,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[3]
     engine = random.choice(engines)
     team = Team(
-        'Marlboro', [drv1, drv2], [1, 2], random.random()*0.9, engine, "bright_white", "red", random.randint(1, 5))
+        'Marlboro', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "bright_white", "red", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -99,7 +99,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[5]
     engine = random.choice(engines)
     team = Team(
-        'Phillip Morris', [drv1, drv2], [1, 2], random.random()*0.9, engine, "dodger_blue1", "bright_white",
+        'Phillip Morris', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "dodger_blue1", "bright_white",
         random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
@@ -110,7 +110,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[7]
     engine = random.choice(engines)
     team = Team(
-        'Chesterfield', [drv1, drv2], [1, 2], random.random()*0.9, engine, "black", "orange1", random.randint(1, 5))
+        'Chesterfield', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "black", "orange1", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -120,7 +120,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[9]
     engine = random.choice(engines)
     team = Team(
-        'Camel', [drv1, drv2], [1, 2], random.random()*0.9, engine, "blue", "yellow3", random.randint(1, 5))
+        'Camel', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "blue", "yellow3", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -130,7 +130,8 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[11]
     engine = random.choice(engines)
     team = Team(
-        'Newport', [drv1, drv2], [1, 2], random.random()*0.9, engine, "black", "light_sea_green", random.randint(1, 5))
+        'Newport', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "black", "light_sea_green",
+        random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -140,7 +141,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[13]
     engine = random.choice(engines)
     team = Team(
-        'Winston', [drv1, drv2], [1, 2], random.random()*0.9, engine, "dark_blue", "white", random.randint(1, 5))
+        'Winston', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "dark_blue", "white", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -150,7 +151,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[15]
     engine = random.choice(engines)
     team = Team(
-        'West', [drv1, drv2], [1, 2], random.random()*0.9, engine, "grey78", "dark_red", random.randint(1, 5))
+        'West', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "grey78", "dark_red", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -160,7 +161,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[17]
     engine = random.choice(engines)
     team = Team(
-        'Rothmans', [drv1, drv2], [1, 2], random.random()*0.9, engine, "gold3", "navy_blue", random.randint(1, 5))
+        'Rothmans', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "gold3", "navy_blue", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
@@ -170,7 +171,7 @@ def populate_world(drivers_pool) -> Tuple[List[Track], List[Engine], List[Team],
     drv2 = drivers[19]
     engine = random.choice(engines)
     team = Team(
-        'Pall Mall', [drv1, drv2], [1, 2], random.random()*0.9, engine, "white", "green4", random.randint(1, 5))
+        'Pall Mall', [drv1, drv2], [1, 2], random.random() * 0.9, engine, "white", "green4", random.randint(1, 5))
     teams.append(team)
     engine.add_team(team)
     drv1.team = team
